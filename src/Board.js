@@ -32,24 +32,30 @@ function getRandomTF() {
 
 function Board({ nrows, ncols, chanceLightStartsOn }) {
     const [board, setBoard] = useState(createBoard());
+    const [isWinner, setIsWinner] = useState(false);
 
     /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
     function createBoard() {
+        // TODO: create array-of-arrays of true/false values
         let initialBoard = [];
-        const trueFalse = ["true", "false"];
-        for (i = 0; i < nrows; i++) {
+        const trueFalse = [true, false];
+        for (y = 0; y < nrows; y++) {
             initialBoard.push([])
-            for (j = 0; j < ncols; j++) {
-                initialBoard[i].push(trueFalse[getRandomTF()])
+            for (x = 0; x < ncols; x++) {
+                initialBoard[y].push(trueFalse[getRandomTF()])
             }
         }
         console.log(initialBoard)
-        // TODO: create array-of-arrays of true/false values
         return initialBoard;
     }
 
     function hasWon() {
         // TODO: check the board in state to determine whether the player has won.
+        for (y = 0; y < nrows; y++) {
+            if (board[y].every(x => x === false)) {
+                setIsWinner(true)
+            }
+        }
     }
 
     function flipCellsAround(coord) {
