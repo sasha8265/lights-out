@@ -30,20 +30,21 @@ function getRandomTF() {
     return Math.floor(Math.random() * 2)
 }
 
-function Board({ nrows, ncols, chanceLightStartsOn }) {
+function Board({ nrows=5, ncols=5, chanceLightStartsOn }) {
     const [board, setBoard] = useState(createBoard());
-    const [isWinner, setIsWinner] = useState(false);
+    // const [isWinner, setIsWinner] = useState(false);
 
     /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
     function createBoard() {
         // TODO: create array-of-arrays of true/false values
         let initialBoard = [];
         const trueFalse = [true, false];
-        for (y = 0; y < nrows; y++) {
-            initialBoard.push([])
-            for (x = 0; x < ncols; x++) {
-                initialBoard[y].push(trueFalse[getRandomTF()])
+        for (let y = 0; y < nrows; y++) {
+            let row = [];
+            for (let x = 0; x < ncols; x++) {
+                row.push(trueFalse[getRandomTF()])
             }
+            initialBoard.push(row);
         }
         console.log(initialBoard)
         return initialBoard;
@@ -52,7 +53,7 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
     function hasWon() {
         // TODO: check the board in state to determine whether the player has won.
         if (board.every(y => y === false)) {
-            setIsWinner(true);
+            return;
         };
     };
 
@@ -83,12 +84,37 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
     }
 
     // if the game is won, just show a winning msg & render nothing else
+    if (hasWon()) {
+        return (
+            <div>
+                <h2>You Won!</h2>
+            </div>
+        )
+    }
+    // make board: rows of Cell components
+    let tableBoard = [];
+    for (let y = 0; y < nrows; y++) {
+        let row = [];
+        for (let x = 0; x < ncols; x++) {
+            let coord = `${y}-${x}`;
+            row.push(<Cell
+                key={coord}
+                isLit={board[y][x]}
+                flipCellsAroundMe={() => flipCellsAround(coord)}
+            />);
+        }
+        tableBoard.push(<tr key={y}>{row}</tr>)
+    }
 
-    // TODO
-
-    // make table board
-
-    // TODO
+    return (
+        <div>
+            <h1>Lights Out</h1>
+            <h4>Clicking on a cell toggles that cell and each of its immediate neighbors - left, right, top and bottom. The goal is to turn out all the lights, ideally with the minimum number of clicks.</h4>
+            <table className="Board">
+                <tbody>{tableBoard}</tbody>
+            </table>
+        </div>
+    )
 }
 
 export default Board;
